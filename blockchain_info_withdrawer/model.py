@@ -1,5 +1,4 @@
 from sqlalchemy import ForeignKey
-from sqlalchemy import create_engine
 from sqlalchemy import desc, func
 from sqlalchemy.sql.expression import and_, or_, exists
 from sqlalchemy import Column, Integer, Unicode, String, DateTime, Boolean, Numeric, Text, Date, UniqueConstraint, UnicodeText

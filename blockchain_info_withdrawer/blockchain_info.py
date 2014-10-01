@@ -8,6 +8,7 @@ from urlparse import urlparse
 from functools import partial
 
 from model import Base, Withdraw
+from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 from twisted.internet import reactor, ssl
