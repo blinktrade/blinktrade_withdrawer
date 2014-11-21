@@ -1,25 +1,20 @@
 #!/usr/bin/env python
 import json
-import argparse
-import getpass
 import urllib
 
-from urlparse import urlparse
 from functools import partial
 
-from model import Base, Withdraw
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
+from model import Withdraw
 
-from twisted.internet import reactor, ssl
+from twisted.internet import reactor
 from twisted.web.client import getPage
-from autobahn.twisted.websocket import WebSocketClientProtocol, WebSocketClientFactory
+from autobahn.twisted.websocket import WebSocketClientProtocol
 
 from pyblinktrade.message_builder import MessageBuilder
 from pyblinktrade.message import JsonMessage
 
 
-class BtcWithdrawalProtocol(WebSocketClientProtocol):
+class BlockchainInfoWithdrawalProtocol(WebSocketClientProtocol):
   def onConnect(self, response):
     print("Server connected: {0}".format(response.peer))
 
@@ -36,7 +31,11 @@ class BtcWithdrawalProtocol(WebSocketClientProtocol):
 
     sendTestRequest()
 
-    self.sendJSON( MessageBuilder.login(  self.factory.blintrade_user, self.factory.blintrade_password ) )
+    self.sendJSON( MessageBuilder.login(
+      self.factory.blinktrade_broker_id,
+      self.factory.blinktrade_user, 
+      self.factory.blinktrade_password,
+      self.factory.blinktrade_2fa) )
 
   def onMessage(self, payload, isBinary):
     if isBinary:
@@ -107,9 +106,10 @@ class BtcWithdrawalProtocol(WebSocketClientProtocol):
         self.factory.db_session.commit()
 
         if should_transfer:
-          self.factory.reactor.callLater(0, partial(self.initiateBlockchainTransfer, process_req_id) )
+          self.factory.reactor.callLater(0, partial(self.initiateTransfer, process_req_id) )
 
-  def initiateBlockchainTransfer(self, process_req_id):
+  def initiateTransfer(self, process_req_id):
+
     withdraw_record = Withdraw.get_withdraw_by_process_req_id(self.factory.db_session, process_req_id)
     if withdraw_record.status != '2':
       return
@@ -167,11 +167,9 @@ class BtcWithdrawalProtocol(WebSocketClientProtocol):
       self.factory.db_session.add(withdraw_record)
       self.factory.db_session.commit()
 
-
       process_withdraw_message = MessageBuilder.processWithdraw(action      = 'COMPLETE',
                                                                 withdrawId  = withdraw_record.id ,
                                                                 data        = withdraw_data )
-
 
       self.sendJSON( process_withdraw_message )
 
@@ -194,61 +192,3 @@ class BtcWithdrawalProtocol(WebSocketClientProtocol):
     print("WebSocket connection closed: {0}".format(reason))
     reactor.stop()
 
-
-def main():
-  parser = argparse.ArgumentParser(description="Process all withdrawals using blockchain.info wallet api")
-
-  parser.add_argument('-b', "--blinktrade_websocket_url", action="store", dest="blintrade_webscoket_url", help='Blinktrade Websocket Url', type=str)
-  parser.add_argument('-u', "--blinktrade_username", action="store", dest="blintrade_user",     help='Blinktrade User', type=str)
-  parser.add_argument('-p', "--blinktrade_password", action="store", dest="blintrade_password",  help='Blinktrade Password', type=str)
-  parser.add_argument('-db', "--db_engine", action="store", dest="db_engine",  help='Database Engine', type=str)
-  parser.add_argument('-v', "--verbose", action="store_true", default=False, dest="verbose",  help='Verbose')
-
-  #to=$address&amount=$amount&fee=$fee&note=$note
-  parser.add_argument('-g', "--blockchain_guid", action="store", dest="blockchain_guid", help='Blockchain guid', type=str)
-  parser.add_argument('-a', "--from_address", action="store", dest="from_address", help='From address', type=str)
-  parser.add_argument('-n', "--note", action="store", dest="note", help='Blockchain public note', type=str)
-  blockchain_main_password = getpass.getpass('Blockchain.info main password: ')
-  blockchain_second_password = getpass.getpass('Blockchain.info second password: ')
-
-
-  arguments = parser.parse_args()
-
-  if not arguments.db_engine:
-    parser.print_help()
-    return
-
-  blinktrade_port = 443
-  should_connect_on_ssl = True
-  blinktrade_url = urlparse(arguments.blintrade_webscoket_url)
-  if  blinktrade_url.port is None and blinktrade_url.scheme == 'ws':
-    should_connect_on_ssl = False
-    blinktrade_port = 80
-
-
-  db_engine = create_engine(arguments.db_engine, echo=arguments.verbose)
-  Base.metadata.create_all(db_engine)
-
-
-  factory = WebSocketClientFactory(blinktrade_url.geturl())
-  factory.blintrade_user = arguments.blintrade_user
-  factory.blintrade_password = arguments.blintrade_password
-  factory.blockchain_guid = arguments.blockchain_guid
-  factory.from_address = arguments.from_address
-  factory.note = arguments.note
-  factory.blockchain_main_password = blockchain_main_password
-  factory.blockchain_second_password = blockchain_second_password
-  factory.db_session = scoped_session(sessionmaker(bind=db_engine))
-  factory.verbose = arguments.verbose
-
-  factory.protocol = BtcWithdrawalProtocol
-  if should_connect_on_ssl:
-    reactor.connectSSL( blinktrade_url.netloc ,  blinktrade_port , factory, ssl.ClientContextFactory() )
-  else:
-    reactor.connectTCP(blinktrade_url.netloc ,  blinktrade_port , factory )
-
-  reactor.run()
-
-
-if __name__ == '__main__':
-  main()

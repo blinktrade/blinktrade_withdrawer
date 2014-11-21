@@ -1,0 +1,16 @@
+[database]
+sqlalchemy_engine=sqlite
+sqlalchemy_connection_string=~/.blinktrade/blockchain_info_withdrawer.sqlite
+sqlalchmey_verbose=False
+
+[blinktrade]
+webscoket_url=wss://api.blinktrade.com/trade/
+user=exchange
+broker_id=8999999
+verbose=False
+
+[blockchain_info]
+guid=
+from_address=
+note=
+
