@@ -25,7 +25,7 @@ class BlockchainInfoWithdrawalProtocol(BlinktradeWithdrawalProtocol):
       ('password'        , self.factory.blockchain_main_password),
       ('second_password' , self.factory.blockchain_second_password),
       ('to'              , json.loads(withdraw_record.data)['Wallet']),
-      ('amount'          , withdraw_record.amount),
+      ('amount'          , int(round(withdraw_record.amount))),
       ('from'            , self.factory.from_address),
       ('note'            , self.factory.note)
     ]
