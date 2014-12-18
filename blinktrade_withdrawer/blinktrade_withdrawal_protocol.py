@@ -96,8 +96,8 @@ class BlinktradeWithdrawalProtocol(WebSocketClientProtocol):
       should_transfer = False
       if withdraw_record:
         if withdraw_record.status == '1' and msg.get('Status') == '2'\
-          and (self.factory.methods[0] == '*' or msg.get('Method') in self.factory.methods)\
-          and (self.factory.currencies[0] == '*' or  msg.get('Currency') in self.factory.currencies):
+          and (self.factory.methods[0] == '*' or withdraw_record.method  in self.factory.methods)\
+          and (self.factory.currencies[0] == '*' or  withdraw_record.currency in self.factory.currencies):
           should_transfer = True
 
         withdraw_record.status = msg.get('Status')
