@@ -8,9 +8,13 @@ webscoket_url=wss://api.blinktrade.com/trade/
 user=exchange
 broker_id=8999999
 verbose=False
+currency=BTC
+method=CRY
 
 [blockchain_info]
 guid=
 from_address=
 note=
+
+
 

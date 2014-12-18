@@ -1,6 +1,7 @@
 import os
 import argparse
 import getpass
+import json
 
 import ConfigParser
 from appdirs import site_config_dir
@@ -54,12 +55,13 @@ def main():
   engine = create_engine(db_engine, echo=config.getboolean('database', 'sqlalchmey_verbose'))
   Base.metadata.create_all(engine)
 
-
   factory = WebSocketClientFactory(blinktrade_url.geturl())
   factory.db_session                  = scoped_session(sessionmaker(bind=engine))
   factory.verbose                     = config.getboolean("blinktrade", "verbose")
   factory.blinktrade_user             = config.get("blinktrade", "user")
   factory.blinktrade_broker_id        = config.get("blinktrade", "broker_id")
+  factory.currencies                  = json.loads(config.get("blinktrade", "currencies"))
+  factory.methods                     = json.loads(config.get("blinktrade", "methods"))
   factory.blinktrade_password         = blinktrade_password
   factory.blinktrade_2fa              = blinktrade_2fa
 
@@ -72,6 +74,16 @@ def main():
     factory.blockchain_second_password  = blockchain_second_password
     factory.protocol = BlockchainInfoWithdrawalProtocol
 
+  if config.has_section('mailer'):
+    from mailer_protocol import MailerWithdrawalProtocol
+    factory.mandrill_apikey             = config.get("mailer", "mandrill_apikey")
+    factory.mandrill_template_name      = config.get("mailer", "template_name")
+    factory.mandrill_from_email         = config.get("mailer", "from_email")
+    factory.mandrill_from_name          = config.get("mailer", "from_name")
+    factory.mandrill_to_email           = config.get("mailer", "to_email")
+    factory.mandrill_to_name            = config.get("mailer", "to_name")
+    factory.mandrill_website            = config.get("mailer", "website")
+    factory.protocol = MailerWithdrawalProtocol
 
   if should_connect_on_ssl:
     reactor.connectSSL( blinktrade_url.netloc ,  blinktrade_port , factory, ssl.ClientContextFactory() )

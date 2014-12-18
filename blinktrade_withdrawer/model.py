@@ -1,9 +1,6 @@
-from sqlalchemy import ForeignKey
-from sqlalchemy import desc, func
-from sqlalchemy.sql.expression import and_, or_, exists
-from sqlalchemy import Column, Integer, Unicode, String, DateTime, Boolean, Numeric, Text, Date, UniqueConstraint, UnicodeText
-from sqlalchemy.orm import  relationship, backref
+from sqlalchemy import Column, Integer, String, DateTime, Numeric, Text
 from sqlalchemy.ext.declarative import declarative_base
+
 
 import datetime
 import json
@@ -30,8 +27,13 @@ class Withdraw(Base):
   fixed_fee       = Column(Integer,       nullable=False, default=0)
   paid_amount     = Column(Integer,       nullable=False, default=0, index=True)
   process_req_id  = Column(Integer,       index=True)
-  blockchain_response = Column(Text)
+  response = Column(Text)
 
+  def as_dict(self):
+    import json
+    obj = { c.name: getattr(self, c.name) for c in self.__table__.columns }
+    obj.update(json.loads(self.data))
+    return obj
 
   @staticmethod
   def get_withdraw_by_id(session, id):

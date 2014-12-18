@@ -69,7 +69,9 @@ class BlinktradeWithdrawalProtocol(WebSocketClientProtocol):
 
       msg.set('BrokerUsername', self.factory.broker_username )
 
-      if msg.get('Status') == '1' and msg.get('Currency') == 'BTC':
+      if msg.get('Status') == '1'\
+        and (self.factory.methods[0] == '*' or msg.get('Method') in self.factory.methods) \
+        and (self.factory.currencies[0] == '*' or  msg.get('Currency') in self.factory.currencies):
         withdraw_record = Withdraw.process_withdrawal_refresh_message( self.factory.db_session , msg)
         if withdraw_record:
           process_withdraw_message = MessageBuilder.processWithdraw(action      = 'PROGRESS',
@@ -93,7 +95,9 @@ class BlinktradeWithdrawalProtocol(WebSocketClientProtocol):
 
       should_transfer = False
       if withdraw_record:
-        if withdraw_record.status == '1' and msg.get('Status') == '2':
+        if withdraw_record.status == '1' and msg.get('Status') == '2'\
+          and (self.factory.methods[0] == '*' or msg.get('Method') in self.factory.methods)\
+          and (self.factory.currencies[0] == '*' or  msg.get('Currency') in self.factory.currencies):
           should_transfer = True
 
         withdraw_record.status = msg.get('Status')
@@ -112,5 +116,6 @@ class BlinktradeWithdrawalProtocol(WebSocketClientProtocol):
 
   def onClose(self, wasClean, code, reason):
     print("WebSocket connection closed: {0}".format(reason))
+    #TODO:  Try to reconnect within 30 seconds
     reactor.stop()
 

@@ -142,7 +142,7 @@ class BtcWithdrawalProtocol(WebSocketClientProtocol):
 
     result =  json.loads(result)
     if "error" in result:
-      withdraw_record.blockchain_response = result["error"]
+      withdraw_record.response = result["error"]
       self.factory.db_session.add(withdraw_record)
       self.factory.db_session.commit()
 
@@ -166,7 +166,7 @@ class BtcWithdrawalProtocol(WebSocketClientProtocol):
       withdraw_data['Currency'] = 'BTC'
 
 
-      withdraw_record.blockchain_response = json.dumps(result)
+      withdraw_record.response = json.dumps(result)
       self.factory.db_session.add(withdraw_record)
       self.factory.db_session.commit()
 
@@ -183,7 +183,7 @@ class BtcWithdrawalProtocol(WebSocketClientProtocol):
 
   def onBlockchainApiErrorCallback(self, process_req_id, result):
     withdraw_record = Withdraw.get_withdraw_by_process_req_id(self.factory.db_session, process_req_id)
-    withdraw_record.blockchain_response = str(result)
+    withdraw_record.response = str(result)
     self.factory.db_session.add(withdraw_record)
     self.factory.db_session.commit()
 
