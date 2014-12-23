@@ -19,11 +19,13 @@ class MailerWithdrawalProtocol(BlinktradeWithdrawalProtocol):
       return
 
     template_content = []
-
-    for k,v in withdraw_record.as_dict().iteritems():
-      if k in ('amount','paid_amount'):
+    withdraw_record_dict = withdraw_record.as_dict()
+    for k,v in withdraw_record_dict.iteritems():
+      if k in ('amount','paid_amount', 'fixed_fee'):
         v = '{:,.2f}'.format(v / 1e8)
-      if k == 'created':
+      elif k == 'percent_fee':
+        v = float(v)
+      elif k == 'created':
         v = v.isoformat()
       template_content.append( { 'name': k, 'content': v  } )
     template_content.append( {'name':'data' , 'content': withdraw_record.data } )
