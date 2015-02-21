@@ -93,12 +93,16 @@ class BlinktradeWithdrawalProtocol(WebSocketClientProtocol):
       process_req_id = msg.get('ProcessWithdrawReqID')
       withdraw_record = Withdraw.get_withdraw_by_process_req_id(self.factory.db_session, process_req_id)
 
+
+
       should_transfer = False
       if withdraw_record:
         if withdraw_record.status == '1' and msg.get('Status') == '2'\
           and (self.factory.methods[0] == '*' or withdraw_record.method  in self.factory.methods)\
           and (self.factory.currencies[0] == '*' or  withdraw_record.currency in self.factory.currencies):
-          should_transfer = True
+
+          if withdraw_record.account_id not in self.factory.blocked_accounts:
+            should_transfer = True
 
         withdraw_record.status = msg.get('Status')
         withdraw_record.reason = msg.get('Reason')

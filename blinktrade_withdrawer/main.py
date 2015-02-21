@@ -65,6 +65,8 @@ def main():
   factory.blinktrade_password         = blinktrade_password
   factory.blinktrade_2fa              = blinktrade_2fa
 
+  factory.blocked_accounts            = json.loads(config.get("blinktrade", "blocked_accounts"))
+
   if config.has_section('blockchain_info'):
     from blockchain_info import BlockchainInfoWithdrawalProtocol
     factory.blockchain_guid             = config.get("blockchain_info", "guid")

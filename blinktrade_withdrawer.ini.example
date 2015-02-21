@@ -10,6 +10,7 @@ broker_id=8999999
 verbose=False
 currency=BTC
 method=CRY
+blocked_accounts=[]
 
 [blockchain_info]
 guid=
