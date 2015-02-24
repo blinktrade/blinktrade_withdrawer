@@ -20,6 +20,7 @@ class BlinktradeWithdrawalProtocol(WebSocketClientProtocol):
     message = json.dumps(json_message).encode('utf8')
     if self.factory.verbose:
       print 'tx:',message
+    message['FingerPrint'] = '888888'
     self.sendMessage(message)
 
   def onOpen(self):
