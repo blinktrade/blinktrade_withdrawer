@@ -17,10 +17,10 @@ class BlinktradeWithdrawalProtocol(WebSocketClientProtocol):
     print("Server connected: {0}".format(response.peer))
 
   def sendJSON(self, json_message):
+    json_message['FingerPrint'] = '888888'
     message = json.dumps(json_message).encode('utf8')
     if self.factory.verbose:
       print 'tx:',message
-    message['FingerPrint'] = '888888'
     self.sendMessage(message)
 
   def onOpen(self):
