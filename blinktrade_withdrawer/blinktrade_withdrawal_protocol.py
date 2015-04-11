@@ -30,11 +30,9 @@ class BlinktradeWithdrawalProtocol(WebSocketClientProtocol):
 
     sendTestRequest()
 
-    self.sendJSON( MessageBuilder.login(
-      self.factory.blinktrade_broker_id,
-      self.factory.blinktrade_user,
-      self.factory.blinktrade_password,
-      self.factory.blinktrade_2fa) )
+    self.sendJSON( MessageBuilder.login(self.factory.blinktrade_broker_id,
+                                        self.factory.blinktrade_user,
+                                        self.factory.blinktrade_password) )
 
   def onMessage(self, payload, isBinary):
     if isBinary:
