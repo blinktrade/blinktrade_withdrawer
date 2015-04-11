@@ -1,6 +1,7 @@
 import os
 import argparse
 import getpass
+import json
 
 from binascii import unhexlify
 from simplecrypt import decrypt
@@ -54,13 +55,15 @@ def main():
   engine = create_engine(db_engine, echo=config.getboolean('database', 'sqlalchmey_verbose'))
   Base.metadata.create_all(engine)
 
-
   factory = WebSocketClientFactory(blinktrade_url.geturl())
   factory.db_session                  = scoped_session(sessionmaker(bind=engine))
   factory.verbose                     = config.getboolean("blinktrade", "verbose")
   factory.blinktrade_broker_id        = config.get("blinktrade", "broker_id")
   factory.blinktrade_user             = decrypt(password, unhexlify(config.get("blinktrade", "user")))
   factory.blinktrade_password         = decrypt(password, unhexlify(config.get("blinktrade", "password")))
+  factory.currencies                  = json.loads(config.get("blinktrade", "currencies"))
+  factory.methods                     = json.loads(config.get("blinktrade", "methods"))
+  factory.blocked_accounts            = json.loads(config.get("blinktrade", "blocked_accounts"))
 
   if config.has_section('blockchain_info'):
     from blockchain_info import BlockchainInfoWithdrawalProtocol
@@ -71,6 +74,16 @@ def main():
     factory.note                        = config.get("blockchain_info", "note")
     factory.protocol = BlockchainInfoWithdrawalProtocol
 
+  if config.has_section('mailer'):
+    from mailer_protocol import MailerWithdrawalProtocol
+    factory.mandrill_apikey             = config.get("mailer", "mandrill_apikey")
+    factory.mandrill_template_name      = config.get("mailer", "template_name")
+    factory.mandrill_from_email         = config.get("mailer", "from_email")
+    factory.mandrill_from_name          = config.get("mailer", "from_name")
+    factory.mandrill_to_email           = config.get("mailer", "to_email")
+    factory.mandrill_to_name            = config.get("mailer", "to_name")
+    factory.mandrill_website            = config.get("mailer", "website")
+    factory.protocol = MailerWithdrawalProtocol
 
   if should_connect_on_ssl:
     reactor.connectSSL( blinktrade_url.netloc ,  blinktrade_port , factory, ssl.ClientContextFactory() )
