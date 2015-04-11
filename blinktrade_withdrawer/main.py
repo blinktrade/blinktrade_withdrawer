@@ -2,6 +2,9 @@ import os
 import argparse
 import getpass
 
+from binascii import unhexlify
+from simplecrypt import decrypt
+
 import ConfigParser
 from appdirs import site_config_dir
 
@@ -13,6 +16,9 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 
 from twisted.internet import reactor, ssl
 from autobahn.twisted.websocket import WebSocketClientFactory
+
+
+
 
 def main():
   parser = argparse.ArgumentParser(description="Process blinktrade withdrawals requests")
@@ -33,13 +39,7 @@ def main():
   config = ConfigParser.SafeConfigParser()
   config.read( candidates )
 
-  if config.has_section('blockchain_info'):
-    blockchain_main_password    = getpass.getpass('Blockchain.info main password: ')
-    blockchain_second_password  = getpass.getpass('Blockchain.info second password: ')
-
-
-  blinktrade_password         = getpass.getpass('blinktrade password: ')
-  blinktrade_2fa              = getpass.getpass('blinktrade second factor authentication: ')
+  password = getpass.getpass('password: ')
 
 
   blinktrade_port = 443
@@ -58,18 +58,17 @@ def main():
   factory = WebSocketClientFactory(blinktrade_url.geturl())
   factory.db_session                  = scoped_session(sessionmaker(bind=engine))
   factory.verbose                     = config.getboolean("blinktrade", "verbose")
-  factory.blinktrade_user             = config.get("blinktrade", "user")
   factory.blinktrade_broker_id        = config.get("blinktrade", "broker_id")
-  factory.blinktrade_password         = blinktrade_password
-  factory.blinktrade_2fa              = blinktrade_2fa
+  factory.blinktrade_user             = decrypt(password, unhexlify(config.get("blinktrade", "user")))
+  factory.blinktrade_password         = decrypt(password, unhexlify(config.get("blinktrade", "password")))
 
   if config.has_section('blockchain_info'):
     from blockchain_info import BlockchainInfoWithdrawalProtocol
-    factory.blockchain_guid             = config.get("blockchain_info", "guid")
+    factory.blockchain_guid             = decrypt(password, unhexlify(config.get("blockchain_info", "guid")))
+    factory.blockchain_main_password    = decrypt(password, unhexlify(config.get("blockchain_info", "main_password")))
+    factory.blockchain_second_password  = decrypt(password, unhexlify(config.get("blockchain_info", "second_password")))
     factory.from_address                = config.get("blockchain_info", "from_address")
     factory.note                        = config.get("blockchain_info", "note")
-    factory.blockchain_main_password    = blockchain_main_password
-    factory.blockchain_second_password  = blockchain_second_password
     factory.protocol = BlockchainInfoWithdrawalProtocol
 
 
