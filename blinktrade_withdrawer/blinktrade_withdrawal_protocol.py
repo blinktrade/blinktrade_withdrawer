@@ -11,7 +11,6 @@ from autobahn.twisted.websocket import WebSocketClientProtocol
 from pyblinktrade.message_builder import MessageBuilder
 from pyblinktrade.message import JsonMessage
 
-
 class BlinktradeWithdrawalProtocol(WebSocketClientProtocol):
   def onConnect(self, response):
     print("Server connected: {0}".format(response.peer))

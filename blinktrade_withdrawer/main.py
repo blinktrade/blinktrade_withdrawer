@@ -16,9 +16,20 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 from twisted.internet import reactor, ssl
+
 from autobahn.twisted.websocket import WebSocketClientFactory
+from twisted.internet.protocol import ReconnectingClientFactory
+from blinktrade_withdrawal_protocol import BlinktradeWithdrawalProtocol
 
+class BlinkTradeClientFactory(WebSocketClientFactory, ReconnectingClientFactory):
+    protocol = BlinktradeWithdrawalProtocol
+    def clientConnectionFailed(self, connector, reason):
+        print("Client connection failed .. retrying ..")
+        self.retry(connector)
 
+    def clientConnectionLost(self, connector, reason):
+        print("Client connection lost .. retrying ..")
+        self.retry(connector)
 
 
 def main():
@@ -55,7 +66,7 @@ def main():
   engine = create_engine(db_engine, echo=config.getboolean('database', 'sqlalchmey_verbose'))
   Base.metadata.create_all(engine)
 
-  factory = WebSocketClientFactory(blinktrade_url.geturl())
+  factory = BlinkTradeClientFactory(blinktrade_url.geturl())
   factory.db_session                  = scoped_session(sessionmaker(bind=engine))
   factory.verbose                     = config.getboolean("blinktrade", "verbose")
   factory.blinktrade_broker_id        = config.get("blinktrade", "broker_id")
