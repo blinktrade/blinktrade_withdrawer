@@ -118,6 +118,4 @@ class BlinktradeWithdrawalProtocol(WebSocketClientProtocol):
 
   def onClose(self, wasClean, code, reason):
     print("WebSocket connection closed: {0}".format(reason))
-    #TODO:  Try to reconnect within 30 seconds
-    reactor.stop()
 
