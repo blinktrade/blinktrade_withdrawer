@@ -81,6 +81,7 @@ def main():
     factory.blockchain_guid             = decrypt(password, unhexlify(config.get("blockchain_info", "guid")))
     factory.blockchain_main_password    = decrypt(password, unhexlify(config.get("blockchain_info", "main_password")))
     factory.blockchain_second_password  = decrypt(password, unhexlify(config.get("blockchain_info", "second_password")))
+    factory.blockchain_api_key          = config.get("blockchain_info", "api_key")
     factory.from_address                = config.get("blockchain_info", "from_address")
     factory.note                        = config.get("blockchain_info", "note")
     factory.protocol = BlockchainInfoWithdrawalProtocol
