@@ -76,6 +76,46 @@ def main():
     factory.blockchain_second_password  = blockchain_second_password
     factory.protocol = BlockchainInfoWithdrawalProtocol
 
+  if config.has_section('blocktrail'):
+    client = blocktrail.APIClient(api_key=config.get("blocktrail", "api_key"),
+                                  api_secret=config.get("blocktrail", "api_secret"),
+                                  network='BTC',
+                                  testnet=config.get("blocktrail", "testnet"))
+    data = client.get_wallet(config.get("blocktrail", "wallet_identifier"))
+
+    primary_seed = Mnemonic.to_seed(data['primary_mnemonic'],  wallet_passphrase)
+    primary_private_key = BIP32Node.from_master_secret(primary_seed, netcode='XTN' if client.testnet else 'BTC')
+    backup_public_key = BIP32Node.from_hwif(data['backup_public_key'][0])
+    checksum =  client.create_checksum(primary_private_key)
+    if checksum != data['checksum']:
+        raise Exception("Checksum [%s] does not match expected checksum [%s], " \
+                        "most likely due to incorrect password" % (checksum, data['checksum']))
+
+    blocktrail_public_keys = {}
+    for v,k in data['blocktrail_public_keys']:
+      if k in blocktrail_public_keys:
+        blocktrail_public_keys[k].append(v)
+      else:
+        blocktrail_public_keys[k] = [v]
+
+    key_index = data['key_index']
+
+    wallet = blocktrail.wallet.Wallet(client=client,
+                                      identifier= config.get("blocktrail", "testnet"),
+                                      primary_mnemonic=data['primary_mnemonic'],
+                                      primary_private_key=primary_private_key,
+                                      backup_public_key=backup_public_key,
+                                      blocktrail_public_keys=blocktrail_public_keys,
+                                      key_index=key_index,
+                                      testnet=client.testnet)
+
+
+    from blocktrail_driver import BlocktrailWithdrawalProtocol
+    factory.blocktrail_wallet           = wallet
+    factory.blocktrail_change_address   = config.get("blocktrail", "change_address")
+    factory.protocol = BlocktrailWithdrawalProtocol
+
+
   if config.has_section('mailer'):
     from mailer_protocol import MailerWithdrawalProtocol
     factory.mandrill_apikey             = config.get("mailer", "mandrill_apikey")
