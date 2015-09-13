@@ -22,6 +22,7 @@ class BlockchainInfoWithdrawalProtocol(BlinktradeWithdrawalProtocol):
     print 'sending {:,.8f} BTC'.format(withdraw_record.amount / 1e8),  'to', json.loads(withdraw_record.data)['Wallet']
 
     query_args = [
+      ('api_code'        , self.factory.blockchain_api_key),
       ('password'        , self.factory.blockchain_main_password),
       ('second_password' , self.factory.blockchain_second_password),
       ('to'              , json.loads(withdraw_record.data)['Wallet']),

@@ -5,17 +5,17 @@ sqlalchmey_verbose=False
 
 [blinktrade]
 webscoket_url=wss://api.blinktrade.com/trade/
-user=exchange
 broker_id=8999999
 verbose=False
+user=#[simple-crypt hexlify data]
+password=#[simple-crypt hexlify data]
 currency=BTC
 method=CRY
 blocked_accounts=[]
 
 [blockchain_info]
-guid=
+guid=#[simple-crypt hexlify data]
+main_password=#[simple-crypt hexlify data]
+second_password=#[simple-crypt hexlify data]
 from_address=
 note=
-
-
-

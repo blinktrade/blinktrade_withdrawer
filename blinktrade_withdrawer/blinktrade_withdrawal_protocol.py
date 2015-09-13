@@ -11,12 +11,12 @@ from autobahn.twisted.websocket import WebSocketClientProtocol
 from pyblinktrade.message_builder import MessageBuilder
 from pyblinktrade.message import JsonMessage
 
-
 class BlinktradeWithdrawalProtocol(WebSocketClientProtocol):
   def onConnect(self, response):
     print("Server connected: {0}".format(response.peer))
 
   def sendJSON(self, json_message):
+    json_message['FingerPrint'] = '888888'
     message = json.dumps(json_message).encode('utf8')
     if self.factory.verbose:
       print 'tx:',message
@@ -29,11 +29,9 @@ class BlinktradeWithdrawalProtocol(WebSocketClientProtocol):
 
     sendTestRequest()
 
-    self.sendJSON( MessageBuilder.login(
-      self.factory.blinktrade_broker_id,
-      self.factory.blinktrade_user,
-      self.factory.blinktrade_password,
-      self.factory.blinktrade_2fa) )
+    self.sendJSON( MessageBuilder.login(self.factory.blinktrade_broker_id,
+                                        self.factory.blinktrade_user,
+                                        self.factory.blinktrade_password) )
 
   def onMessage(self, payload, isBinary):
     if isBinary:
@@ -120,6 +118,4 @@ class BlinktradeWithdrawalProtocol(WebSocketClientProtocol):
 
   def onClose(self, wasClean, code, reason):
     print("WebSocket connection closed: {0}".format(reason))
-    #TODO:  Try to reconnect within 30 seconds
-    reactor.stop()
 
