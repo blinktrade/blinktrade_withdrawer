@@ -115,7 +115,7 @@ def main():
     key_index = data['key_index']
 
     wallet = blocktrail.wallet.Wallet(client=client,
-                                      identifier= config.get("blocktrail", "testnet"),
+                                      identifier= config.get("blocktrail", "wallet_identifier"),
                                       primary_mnemonic=data['primary_mnemonic'],
                                       primary_private_key=primary_private_key,
                                       backup_public_key=backup_public_key,
