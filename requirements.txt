@@ -9,3 +9,4 @@ requests==2.3.0
 mnemonic
 simple-crypt
 blocktrail-sdk-beta
+pycrypto
