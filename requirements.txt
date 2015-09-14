@@ -5,7 +5,6 @@ twisted
 pyopenssl
 service-identity
 autobahn
-requests
 mnemonic
 simple-crypt
 blocktrail-sdk-beta
