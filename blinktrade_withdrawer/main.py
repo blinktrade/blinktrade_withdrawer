@@ -70,7 +70,7 @@ def main():
   factory.db_session                  = scoped_session(sessionmaker(bind=engine))
   factory.verbose                     = config.getboolean("blinktrade", "verbose")
   factory.blinktrade_broker_id        = config.get("blinktrade", "broker_id")
-  factory.blinktrade_user             = decrypt(password, unhexlify(config.get("blinktrade", "user")))
+  factory.blinktrade_user             = config.get("blinktrade", "api_key")
   factory.blinktrade_password         = decrypt(password, unhexlify(config.get("blinktrade", "password")))
   factory.currencies                  = json.loads(config.get("blinktrade", "currencies"))
   factory.methods                     = json.loads(config.get("blinktrade", "methods"))
@@ -87,8 +87,9 @@ def main():
     factory.protocol = BlockchainInfoWithdrawalProtocol
 
   if config.has_section('blocktrail'):
+    import blocktrail
     client = blocktrail.APIClient(api_key=config.get("blocktrail", "api_key"),
-                                  api_secret=config.get("blocktrail", "api_secret"),
+                                  api_secret=decrypt(password, unhexlify(config.get("blocktrail", "api_secret"))),
                                   network='BTC',
                                   testnet=config.get("blocktrail", "testnet"))
     data = client.get_wallet(config.get("blocktrail", "wallet_identifier"))
@@ -120,7 +121,7 @@ def main():
                                       testnet=client.testnet)
 
 
-    from blocktrail_driver import BlocktrailWithdrawalProtocol
+    from blocktrail_protocol import BlocktrailWithdrawalProtocol
     factory.blocktrail_wallet           = wallet
     factory.blocktrail_change_address   = config.get("blocktrail", "change_address")
     factory.protocol = BlocktrailWithdrawalProtocol
