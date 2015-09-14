@@ -4,8 +4,8 @@ pycoin
 twisted
 pyopenssl
 service-identity
-autobahn==0.8.12
-requests==2.3.0
+autobahn
+requests
 mnemonic
 simple-crypt
 blocktrail-sdk-beta
