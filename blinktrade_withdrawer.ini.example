@@ -7,13 +7,21 @@ sqlalchmey_verbose=False
 webscoket_url=wss://api.blinktrade.com/trade/
 broker_id=8999999
 verbose=False
-user=#[simple-crypt hexlify data]
-password=#[simple-crypt hexlify data]
+api_key=YOUR_API_KEY
+api_password=#[simple-crypt hexlify data]
 currency=BTC
 method=CRY
 blocked_accounts=[]
 
-[blockchain_info]
+#[blocktrail]
+api_key=YOUR_BLOCKTRAIL_API_KEY
+api_secret=#[simple-crypt hexlify data]
+testnet=0
+wallet_identifier=YOUR_WALLET_IDENTIFIER
+change_address=YOUR_CHANGE_ADDRESS
+
+
+#[blockchain_info]
 guid=#[simple-crypt hexlify data]
 main_password=#[simple-crypt hexlify data]
 second_password=#[simple-crypt hexlify data]

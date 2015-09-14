@@ -71,7 +71,7 @@ def main():
   factory.verbose                     = config.getboolean("blinktrade", "verbose")
   factory.blinktrade_broker_id        = config.get("blinktrade", "broker_id")
   factory.blinktrade_user             = config.get("blinktrade", "api_key")
-  factory.blinktrade_password         = decrypt(password, unhexlify(config.get("blinktrade", "password")))
+  factory.blinktrade_password         = decrypt(password, unhexlify(config.get("blinktrade", "api_password")))
   factory.currencies                  = json.loads(config.get("blinktrade", "currencies"))
   factory.methods                     = json.loads(config.get("blinktrade", "methods"))
   factory.blocked_accounts            = json.loads(config.get("blinktrade", "blocked_accounts"))
