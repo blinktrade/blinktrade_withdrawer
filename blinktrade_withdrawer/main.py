@@ -88,6 +88,9 @@ def main():
 
   if config.has_section('blocktrail'):
     import blocktrail
+    from mnemonic.mnemonic import Mnemonic
+    from pycoin.key.BIP32Node import BIP32Node
+
     client = blocktrail.APIClient(api_key=config.get("blocktrail", "api_key"),
                                   api_secret=decrypt(password, unhexlify(config.get("blocktrail", "api_secret"))),
                                   network='BTC',
