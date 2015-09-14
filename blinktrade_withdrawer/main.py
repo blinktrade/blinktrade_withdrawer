@@ -97,7 +97,7 @@ def main():
                                   testnet=config.get("blocktrail", "testnet"))
     data = client.get_wallet(config.get("blocktrail", "wallet_identifier"))
 
-    primary_seed = Mnemonic.to_seed(data['primary_mnemonic'],  wallet_passphrase)
+    primary_seed = Mnemonic.to_seed(data['primary_mnemonic'],  decrypt(password, unhexlify(config.get("blocktrail", "wallet_passphrase"))))
     primary_private_key = BIP32Node.from_master_secret(primary_seed, netcode='XTN' if client.testnet else 'BTC')
     backup_public_key = BIP32Node.from_hwif(data['backup_public_key'][0])
     checksum =  client.create_checksum(primary_private_key)

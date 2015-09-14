@@ -18,6 +18,7 @@ api_key=YOUR_BLOCKTRAIL_API_KEY
 api_secret=#[simple-crypt hexlify data]
 testnet=0
 wallet_identifier=YOUR_WALLET_IDENTIFIER
+wallet_passphrase=#[simple-crypt hexlify data]
 change_address=YOUR_CHANGE_ADDRESS
 
 
