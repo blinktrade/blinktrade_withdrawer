@@ -21,7 +21,7 @@ class BlocktrailWithdrawalProtocol(BlinktradeWithdrawalProtocol):
 
     try:
       tx_hash = self.factory.blocktrail_wallet.pay(dest_pay,
-                                                   change_address=self.factory.change_address,
+                                                   change_address=self.factory.blocktrail_change_address,
                                                    allow_zero_conf=True,
                                                    randomize_change_idx=True)
 
