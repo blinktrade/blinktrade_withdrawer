@@ -20,10 +20,10 @@ class BlocktrailWithdrawalProtocol(BlinktradeWithdrawalProtocol):
     print 'paying', dest_pay
 
     try:
-      tx_hash = self.factory.wallet.pay(dest_pay,
-                                        change_address=self.factory.change_address,
-                                        allow_zero_conf=True,
-                                        randomize_change_idx=True)
+      tx_hash = self.factory.blocktrail_wallet.pay(dest_pay,
+                                                   change_address=self.factory.change_address,
+                                                   allow_zero_conf=True,
+                                                   randomize_change_idx=True)
 
       withdraw_record.response = tx_hash
       self.factory.db_session.add(withdraw_record)
@@ -39,6 +39,7 @@ class BlocktrailWithdrawalProtocol(BlinktradeWithdrawalProtocol):
       self.sendJSON( process_withdraw_message )
 
     except Exception,e:
+      print 'Exception', str(e)
       withdraw_record.response = str(e)
       self.factory.db_session.add(withdraw_record)
       self.factory.db_session.commit()
