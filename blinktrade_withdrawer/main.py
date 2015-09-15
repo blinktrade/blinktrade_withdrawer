@@ -23,6 +23,7 @@ from blinktrade_withdrawal_protocol import BlinktradeWithdrawalProtocol
 
 class BlinkTradeClientFactory(WebSocketClientFactory, ReconnectingClientFactory):
     protocol = BlinktradeWithdrawalProtocol
+    factor = 1
     def clientConnectionFailed(self, connector, reason):
         print("Client connection failed .. retrying ..")
         self.retry(connector)
