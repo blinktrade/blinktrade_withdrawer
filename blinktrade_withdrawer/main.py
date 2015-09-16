@@ -2,6 +2,7 @@ import os
 import argparse
 import getpass
 import json
+import mandrill
 
 from binascii import unhexlify
 from simplecrypt import decrypt
@@ -55,6 +56,12 @@ def main():
   password = getpass.getpass('password: ')
 
 
+  mandrill_api = mandrill.Mandrill(config.get("mailer", "mandrill_apikey"))
+  try:
+    mandrill_api.users.ping()
+  except mandrill.Error:
+    raise RuntimeError("Invalid Mandrill API key")
+
   blinktrade_port = 443
   should_connect_on_ssl = True
   blinktrade_url = urlparse( config.get("blinktrade", "webscoket_url"))
@@ -76,6 +83,7 @@ def main():
   factory.currencies                  = json.loads(config.get("blinktrade", "currencies"))
   factory.methods                     = json.loads(config.get("blinktrade", "methods"))
   factory.blocked_accounts            = json.loads(config.get("blinktrade", "blocked_accounts"))
+  factory.mandrill_api                = mandrill_api
 
   if config.has_section('blockchain_info'):
     from blockchain_info import BlockchainInfoWithdrawalProtocol
