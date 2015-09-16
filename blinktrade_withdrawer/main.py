@@ -56,7 +56,7 @@ def main():
   password = getpass.getpass('password: ')
 
 
-  mandrill_api = mandrill.Mandrill(config.get("mailer", "mandrill_apikey"))
+  mandrill_api = mandrill.Mandrill(config.get("blinktrade", "mandrill_apikey"))
   try:
     mandrill_api.users.ping()
   except mandrill.Error:
