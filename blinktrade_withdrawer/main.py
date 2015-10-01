@@ -99,11 +99,14 @@ def main():
     import blocktrail
     from mnemonic.mnemonic import Mnemonic
     from pycoin.key.BIP32Node import BIP32Node
+    is_testnet = False
+    if config.get("blocktrail", "testnet") == '1':
+      is_testnet = True
 
     client = blocktrail.APIClient(api_key=config.get("blocktrail", "api_key"),
                                   api_secret=decrypt(password, unhexlify(config.get("blocktrail", "api_secret"))),
                                   network='BTC',
-                                  testnet=config.get("blocktrail", "testnet"))
+                                  testnet=is_testnet)
     data = client.get_wallet(config.get("blocktrail", "wallet_identifier"))
 
     primary_seed = Mnemonic.to_seed(data['primary_mnemonic'],  decrypt(password, unhexlify(config.get("blocktrail", "wallet_passphrase"))))
