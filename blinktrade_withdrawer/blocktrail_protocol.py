@@ -61,7 +61,7 @@ class BlocktrailWithdrawalProtocol(BlinktradeWithdrawalProtocol):
           'metadata': {'website':  'https://blinktrade.com/'},
           'global_merge_vars': template_content
         }
-        result = self.mandrill_api.messages.send_template(
+        result = self.factory.mandrill_api.messages.send_template(
           template_name='system-notification',
           template_content=template_content,
           message=message)
