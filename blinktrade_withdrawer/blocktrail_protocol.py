@@ -20,7 +20,7 @@ class BlocktrailWithdrawalProtocol(BlinktradeWithdrawalProtocol):
     try:
       tx_hash = self.factory.blocktrail_wallet.pay(dest_pay,
                                                    change_address=self.factory.blocktrail_change_address,
-                                                   allow_zero_conf=True,
+                                                   allow_zero_conf=False,
                                                    randomize_change_idx=True)
 
       withdraw_record.response = tx_hash
@@ -48,14 +48,14 @@ class BlocktrailWithdrawalProtocol(BlinktradeWithdrawalProtocol):
           {'name': 'WithdrawalProtocol','content': 'Blocktrail'},
           {'name': 'From',              'content': self.factory.blocktrail_change_address},
           {'name': 'To',                'content': json.loads(withdraw_record.data)['Wallet']},
-          {'name': 'Amount',            'content': str(withdraw_record.amount)},
+          {'name': 'Amount',            'content': '{:,.8f}'.format(withdraw_record.amount/1e8)},
           {'name': 'Currency',          'content': 'BTC'},
           {'name': 'Error',             'content': str(e)}
         ]
         message = {
           'from_email': 'noreply@blinktrade.com',
           'from_name': 'No reply',
-          'to': [{'email': 'system_motifications@blinktrade.com',
+          'to': [{'email': 'system_notifications@blinktrade.com',
                   'name': 'BlinkTrade system notifications',
                   'type': 'to' }],
           'metadata': {'website':  'https://blinktrade.com/'},
