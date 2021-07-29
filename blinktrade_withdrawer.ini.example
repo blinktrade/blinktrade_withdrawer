@@ -7,8 +7,8 @@ sqlalchmey_verbose=False
 webscoket_url=wss://api.blinktrade.com/trade/
 broker_id=8999999
 verbose=False
-api_key=YOUR_API_KEY
-api_password=#[simple-crypt hexlify data]
+api_key=Ya8EkJ1kJSLyt5ZX60aWlmA7zPEgBqajt7UmvCZEvaA
+api_password=#[xUS4e9hEl1RGpj4Fmh4KvQYKMWT2yItG9SGlDx4aYfo]
 methods=["*"]
 currencies=["BTC"]
 blocked_accounts=[]
@@ -23,8 +23,8 @@ change_address=YOUR_CHANGE_ADDRESS
 
 
 #[blockchain_info]
-guid=#[simple-crypt hexlify data]
-main_password=#[simple-crypt hexlify data]
-second_password=#[simple-crypt hexlify data]
-from_address=
-note=
+guid=#[33rEqVSQWjF8W6Sq2i6A1LcKv9o3UU8vih]
+main_password=#[5faa9576e45acbc9662b6abf323229b748a9495d]
+second_password=#[76a9145faa9576e45acbc9662b6abf323229b748a9495d88ac]
+from_address=19iqYbeATe4RxghQZJnYVFU4mjUUu76EA6
+note="asm": "OP_DUP OP_HASH160 5faa9576e45acbc9662b6abf323229b748a9495d 
